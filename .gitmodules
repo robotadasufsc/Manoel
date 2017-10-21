@@ -1,0 +1,3 @@
+[submodule "submodules/Exposer"]
+	path = submodules/Exposer
+	url = https://github.com/robotadasufsc/Exposer.git
