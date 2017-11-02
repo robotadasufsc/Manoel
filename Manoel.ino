@@ -1,6 +1,7 @@
 //#include "submodules/Exposer/exposer.h"
 //#include "submodules/Exposer/exposer.cpp"
 #include <Servo.h>
+#include <NewPing.h>
 
 #define LOOP_DELAY 2000
 #define RIGHT_B 1600
@@ -8,6 +9,20 @@
 #define RIGHT_F 1200
 #define LEFT_F 1200
 #define STOP_MOTOR 1500
+
+//Sonar sensors pins
+#define TRIGGER1  10
+#define ECHO1     9
+#define TRIGGER2  8
+#define ECHO2     7
+#define MAX_DISTANCE 200
+#define OBSTACLE_DISTANCE 10 //threshold to avoid obstacle, in cm
+
+NewPing sonar1(TRIGGER1, ECHO1, MAX_DISTANCE);
+NewPing sonar2(TRIGGER2, ECHO2, MAX_DISTANCE);
+//falta definir os pinos dos sensores traseiros
+NewPing sonar3(TRIGGER1, ECHO1, MAX_DISTANCE);
+NewPing sonar4(TRIGGER2, ECHO2, MAX_DISTANCE);
 
 //Exposer* exposer = &Exposer::self();
 
@@ -69,7 +84,7 @@ void loop()
     }
     if(rc == 'o'){
       Serial.println("Ordenhar vaca");
-    }    
+    }
     if(rc == 'q'){
       while(!Serial.available() ){}
       robot_vel = Serial.parseInt();
@@ -90,10 +105,32 @@ void loop()
 
 } 
 
+void check_obstacle(char dir){
+  if (dir == 'f'){
+    if(sonar1.ping_cm() > OBSTACLE_DISTANCE){
+      Serial.println("Obstaculo frente - direita");
+    }
+    else
+      delay(50);
+    if(sonar2.ping_cm() > OBSTACLE_DISTANCE){
+      Serial.println("Obstaculo frente - esquerda");
+    }
+  }
+  if (dir == 'b'){
+    if(sonar3.ping_cm() > OBSTACLE_DISTANCE){
+      Serial.println("Obstaculo tras - direita");
+    }
+    else
+      delay(50);
+    if(sonar4.ping_cm() > OBSTACLE_DISTANCE){
+      Serial.println("Obstaculo tras - esquerda");
+    }
+  }
+}
+
 void move_robot(char dir){
-  left_wheel.writeMicroseconds(1400);
-  right_wheel.writeMicroseconds(1400);
-  delay(LOOP_DELAY*2);
+  check_obstacle(dir);
+
   if(dir == 'f'){
     left_wheel.writeMicroseconds(LEFT_F);
     right_wheel.writeMicroseconds(RIGHT_F);
