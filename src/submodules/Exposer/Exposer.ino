@@ -1,6 +1,4 @@
-#include "submodules/Exposer/exposer.h"
-#include "submodules/Exposer/exposer.cpp"
-#include <Servo.h>
+#include "exposer.h"
 
 Exposer* exposer = &Exposer::self();
 
@@ -17,17 +15,11 @@ String teststring = "Batata";
 
 unsigned long next;
 
-Servo left_wheel;
-Servo right_wheel;
-int16_t left_pwm = 1000;
-int16_t right_pwm = 1000;
-
 void setup()
 {
     Serial.begin(115200);
-    left_wheel.attach(11);
-    right_wheel.attach(12);
-    /*exposer->registerVariable(VARNAME(led), Exposer::_uint8_t, &led);
+    pinMode(13, OUTPUT);
+    exposer->registerVariable(VARNAME(led), Exposer::_uint8_t, &led);
     exposer->registerVariable(VARNAME(testuint8), Exposer::_uint8_t, &testuint8);
     exposer->registerVariable(VARNAME(testuint16), Exposer::_uint16_t, &testuint16);
     exposer->registerVariable(VARNAME(testuint32), Exposer::_uint32_t, &testuint32);
@@ -36,24 +28,28 @@ void setup()
     exposer->registerVariable(VARNAME(testint32), Exposer::_int32_t, &testint32);
     exposer->registerVariable(VARNAME(testfloat), Exposer::_float, &testfloat);
     exposer->registerVariable(VARNAME(teststring), Exposer::_string, &teststring);
-  */
-    exposer->registerVariable(VARNAME(left_pwm), Exposer::_int16_t, &left_pwm);
-    exposer->registerVariable(VARNAME(right_pwm), Exposer::_int16_t, &right_pwm);
+
     next = millis()+1000;
 }
 
 void loop()
 {
 
+    digitalWrite(13,(testint8==-50));
 
-
-    exposer->update();  
+    exposer->update();
 
     if (millis()>next){
-        left_wheel.writeMicroseconds(left_pwm);
-        right_wheel.writeMicroseconds(right_pwm);
+        Serial.print("uint8:");Serial.println(testuint8);
+        Serial.print("uint16:");Serial.println(testuint16);
+        Serial.print("uint32:");Serial.println(testuint32);
+        Serial.print("int8:");Serial.println(testint8);
+        Serial.print("int16:");Serial.println(testint16);
+        Serial.print("int32:");Serial.println(testint32);
+        Serial.print("float:");Serial.println(testfloat);
+        Serial.print("string:");Serial.println(teststring);
         next = millis()+1000;
     }
 
-} 
+}
 
